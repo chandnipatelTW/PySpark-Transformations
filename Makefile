@@ -12,9 +12,6 @@ all: default
 
 default: clean dev_deps deps test lint build
 
-.venv:
-	if [ ! -e ".venv/bin/activate_this.py" ] ; then virtualenv --clear .venv ; fi
-
 clean: clean-build clean-pyc clean-test
 
 clean-build:
@@ -31,20 +28,21 @@ clean-test:
 	rm -f .coverage
 	rm -fr htmlcov/
 
-deps: .venv
-	. .venv/bin/activate && pip install -U -r requirements.txt -t ./src/libs
+deps:
+	pip install -U -r requirements.txt -t ./src/libs
 
-dev_deps: .venv
-	. .venv/bin/activate && pip install -U -r dev_requirements.txt
+dev_deps:
+	pip install -U -r dev_requirements.txt
 
 lint:
-	. .venv/bin/activate && pylint -r n src/main.py src/shared src/jobs tests
+	pylint -r n src/main.py src/shared src/jobs tests
 
 test:
-	. .venv/bin/activate && nosetests ./tests/* --config=.noserc
+	nosetests ./tests/* --config=.noserc
 
 build: clean
 	mkdir ./dist
 	cp ./src/main.py ./dist
-	cd ./src && zip -x main.py -x \*libs\* -r ../dist/jobs.zip .
+	cp -r ./src/resources ./dist/resources
+	cd ./src && zip -x main.py -x \*libs\* -x \*resources\* -r ../dist/jobs.zip .
 	cd ./src/libs && zip -r ../../dist/libs.zip .
