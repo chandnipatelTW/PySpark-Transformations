@@ -11,4 +11,3 @@ nose-cov==1.6
 nose-xunitmp==0.3.2
 parameterized==0.7.0
 pylint==2.3.1
-astroid==2.2.2

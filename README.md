@@ -10,14 +10,14 @@ Please make sure you have the following installed
 
 ## Setup Process
 * Clone the repo
+* `cd [the-repo]`
 * Create the conda env:
 ```
-conda create -n yourenvname
-conda activate yourenvname
+conda create -n [yourenvname]
+conda activate [yourenvname]
 conda install pip
 ```
 * Run `make all` to run the tests and create build the project
-* Test: sbt test
 
 ## Running the tests
 ```
@@ -37,6 +37,8 @@ This applications will count the occurrences of a word within a text file. By de
 cd dist 
 spark-submit --py-files jobs.zip,libs.zip main.py --job wordcount
 ```
+
+now in `dist/resources/` you are going to see your wordcount folder, yes it is a folder (and a feature :)): https://stackoverflow.com/questions/24371259/how-to-make-saveastextfile-not-split-output-into-multiple-file 
 
 ### Note
 
