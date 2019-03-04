@@ -1,4 +1,5 @@
 import os
+import time
 
 from main import ROOT_DIR
 from shared.context import JobContext
@@ -15,17 +16,19 @@ def load_file_from_resources(file_name):
     return os.path.join(ROOT_DIR, 'resources', file_name)
 
 
-def split_words(ds):
-    return ds.split(' ')
+def split_words(rdd):
+    return rdd.split(' ')
 
 
-def wordcount(ds):
-    result = (ds.flatMap(split_words)
-              .map(lambda word: (word.lower(), 1))
-              .reduceByKey(lambda a, b: a + b)
-              .sortBy(lambda pair: pair[1], ascending=False)
-              .collect())
-    return result
+def wordcount(rdd):
+    return (rdd.flatMap(split_words)
+            .map(lambda word: (word.lower(), 1))
+            .reduceByKey(lambda a, b: a + b)
+            .sortBy(lambda pair: pair[1], ascending=False))
+
+
+def create_wordcount_csv(rdd, file_path_output):
+    rdd.map(lambda t: t[0] + "," + str(t[1])).saveAsTextFile(file_path_output)
 
 
 def run(sc):
@@ -33,9 +36,13 @@ def run(sc):
     context = WordCountJobContext(sc)
 
     file_path = load_file_from_resources('words.txt')
-    ds = sc.textFile(file_path)
-    result = wordcount(ds)
+    file_path_output = load_file_from_resources('wordcount' + str(time.time()) + '.csv')
 
-    print(result)
+    rdd = sc.textFile(file_path)
+
+    wordcount_rdd = wordcount(rdd)
+    create_wordcount_csv(wordcount_rdd, file_path_output)
+
+    # print(wordcount_rdd.collect())
     context.print_accumulators()
-    return result
+    return wordcount_rdd.collect()
